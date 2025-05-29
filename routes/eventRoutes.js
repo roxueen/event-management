@@ -14,7 +14,8 @@ router.post('/signup', authController.signupUser);
 
 // Dashboard-uri în funcție de tipul de cont
 router.get('/dashboard/participant/:id', eventController.participantDashboard);
-//router.get('/dashboard/:id', eventController.organizerDashboard); // Creezi această funcție în controller
+
+router.get('/event/:id', eventController.showEventDetails);
 
 // Formular creare eveniment (organizer)
 router.get('/create-event/:organizerId', eventController.showCreateForm);

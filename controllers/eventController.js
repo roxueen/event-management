@@ -7,9 +7,28 @@ exports.index = (req, res) => {
       console.error('Eroare la interogare:', err);
       return res.status(500).send('Eroare la interogare');
     }
-    res.render('server', { events: results });
+    res.render('main', { events: results });
   });
 };
+
+// Afișează detaliile unui eveniment
+exports.showEventDetails = (req, res) => {
+  const eventId = req.params.id;
+
+  connection.query('SELECT * FROM events WHERE id = ?', [eventId], (err, results) => {
+    if (err) {
+      console.error('Eroare la interogare:', err);
+      return res.status(500).send('Eroare la interogare');
+    }
+
+    if (results.length > 0) {
+      res.render('eventDetails', { event: results[0] }); // Asigură-te că ai un view pentru detalii
+    } else {
+      res.status(404).send('Evenimentul nu a fost găsit.');
+    }
+  });
+};
+
 
 // Formular creare eveniment (primește organizerId din URL)
 exports.showCreateForm = (req, res) => {

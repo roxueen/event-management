@@ -1,35 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ro">
 <head>
   <meta charset="UTF-8">
-  <title>Create Event</title>
-  <link rel="stylesheet" href="/style.css">
+  <title>Creare Eveniment</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <div class="container">
-    <h1>DASHBOARD</h1>
-    <h2>Create Event</h2>
+<body class="bg-gray-100 text-gray-900">
+  <div class="max-w-xl mx-auto mt-10 p-6 bg-white rounded-lg shadow">
+    <h1 class="text-3xl font-bold mb-2">DASHBOARD</h1>
+    <h2 class="text-xl font-semibold mb-6">Creare Eveniment</h2>
 
-<form action="/create-event" method="POST">
-  <input type="hidden" name="organizer_id" value="1"> <!-- poți prelua din sesiune -->
-  <label for="title">Titlu</label>
-  <input type="text" name="title" required><br>
+    <form action="/create-event/<%= organizerId %>" method="POST" class="space-y-4">
+      <input type="hidden" name="organizer_id" value="<%= organizerId %>">
 
-  <label for="description">Descriere</label>
-  <textarea name="description"></textarea><br>
+      <div>
+        <label for="title" class="block font-medium">Titlu</label>
+        <input type="text" name="title" required class="w-full border rounded px-3 py-2 mt-1">
+      </div>
 
-  <label for="location">Locație</label>
-  <input type="text" name="location" required><br>
+      <div>
+        <label for="description" class="block font-medium">Descriere</label>
+        <textarea name="description" rows="4" required class="w-full border rounded px-3 py-2 mt-1"></textarea>
+      </div>
 
-  <label for="event_date">Data evenimentului</label>
-  <input type="datetime-local" name="event_date" required><br>
+      <div>
+        <label for="location" class="block font-medium">Locație</label>
+        <input type="text" name="location" required class="w-full border rounded px-3 py-2 mt-1">
+      </div>
 
-  <label for="max_participants">Număr maxim participanți</label>
-  <input type="number" name="max_participants" min="1"><br>
+      <div>
+        <label for="event_date" class="block font-medium">Data evenimentului</label>
+        <input type="datetime-local" name="event_date" required class="w-full border rounded px-3 py-2 mt-1">
+      </div>
 
-  <button type="submit">Crează eveniment</button>
-</form>
+      <div>
+        <label for="max_participants" class="block font-medium">Număr maxim participanți</label>
+        <input type="number" name="max_participants" min="1" class="w-full border rounded px-3 py-2 mt-1">
+      </div>
 
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+        Crează eveniment
+      </button>
+    </form>
   </div>
 </body>
 </html>
