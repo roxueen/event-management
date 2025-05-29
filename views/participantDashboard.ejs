@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard Participant</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Bun venit, participant!</h1>
+    <h2>Evenimente disponibile</h2>
+
+    <% if (events.length === 0) { %>
+      <p>Nu sunt evenimente disponibile momentan.</p>
+    <% } else { %>
+      <% events.forEach(event => { %>
+        <div class="event-card">
+          <h3><%= event.title %></h3>
+          <p><strong>Descriere:</strong> <%= event.description %></p>
+          <p><strong>Locație:</strong> <%= event.location %></p>
+          <p><strong>Data:</strong> <%= new Date(event.event_date).toLocaleString("ro-RO") %></p>
+          <p><strong>Locuri disponibile:</strong> <%= event.max_participants %></p>
+          
+          <form action="/register" method="POST">
+            <input type="hidden" name="event_id" value="<%= event.id %>" />
+            <button type="submit">Înscrie-te</button>
+          </form>
+        </div>
+        <hr />
+      <% }) %>
+    <% } %>
+  </div>
+</body>
+</html>

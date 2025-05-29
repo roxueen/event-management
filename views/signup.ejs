@@ -1,0 +1,30 @@
+<div class="login-container">
+  <div class="logo">
+     <img src="/images/logo.png" alt="Logo Site" />
+  </div>
+  <h2>Înregistrare</h2>
+
+  <form action="/signup" method="POST" novalidate>
+    <label for="name">Nume complet</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" required>
+
+    <label for="password">Parolă</label>
+    <input type="password" id="password" name="password" required>
+
+    <label for="confirm">Confirmă parola</label>
+    <input type="password" id="confirm" name="confirm" required>
+
+    <label>Tip cont:</label>
+    <div class="radio-group">
+      <label><input type="radio" name="role" value="organizer" required> Organizator</label>
+      <label><input type="radio" name="role" value="participant"> Participant</label>
+    </div>
+
+    <button type="submit">Înregistrează-te</button>
+  </form>
+
+  <p>Ai deja un cont? <a href="/login">Autentifică-te</a></p>
+</div>
