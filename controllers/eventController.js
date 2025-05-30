@@ -58,8 +58,17 @@ exports.createEvent = (req, res) => {
 exports.participantDashboard = (req, res) => {
   const participantId = req.params.id;
 
-  // Exemplu simplu: afișăm toate evenimentele (poți extinde să afișezi doar cele la care participă)
-  connection.query('SELECT * FROM events', (err, events) => {
+  const sql = `
+    SELECT e.*, 
+      EXISTS (
+        SELECT 1 
+        FROM registrations r 
+        WHERE r.event_id = e.id AND r.participant_id = ?
+      ) AS isRegistered
+    FROM events e
+  `;
+
+  connection.query(sql, [participantId], (err, events) => {
     if (err) {
       console.error('Eroare la afișarea evenimentelor:', err);
       return res.status(500).send("Eroare la afișarea evenimentelor");
@@ -67,6 +76,34 @@ exports.participantDashboard = (req, res) => {
     res.render('participantDashboard', { participantId, events });
   });
 };
+
+// Înregistrare participant la un eveniment
+exports.registerToEvent = (req, res) => {
+  const { participant_id, event_id } = req.body;
+
+  const checkSql = 'SELECT * FROM registrations WHERE participant_id = ? AND event_id = ?';
+  connection.query(checkSql, [participant_id, event_id], (err, results) => {
+    if (err) {
+      console.error('Eroare la verificarea înregistrării:', err);
+      return res.status(500).send("Eroare la verificare");
+    }
+
+    if (results.length > 0) {
+      return res.send("Ești deja înscris la acest eveniment.");
+    }
+
+    const insertSql = 'INSERT INTO registrations (participant_id, event_id) VALUES (?, ?)';
+    connection.query(insertSql, [participant_id, event_id], (err2) => {
+      if (err2) {
+        console.error('Eroare la înscriere:', err2);
+        return res.status(500).send("Eroare la înscriere");
+      }
+
+      res.redirect(`/dashboard/participant/${participant_id}`);
+    });
+  });
+};
+
 
 // Formular login
 exports.showLoginForm = (req, res) => {

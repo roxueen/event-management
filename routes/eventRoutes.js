@@ -20,6 +20,7 @@ router.get('/event/:id', eventController.showEventDetails);
 // Formular creare eveniment (organizer)
 router.get('/create-event/:organizerId', eventController.showCreateForm);
 router.post('/create-event/:organizerId', eventController.createEvent);
+router.post('/register', eventController.registerToEvent);
 
 
 module.exports = router;
