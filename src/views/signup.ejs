@@ -1,21 +1,78 @@
-<div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-    <h2 class="text-2xl font-bold mb-6">Autentificare</h2>
-    <form action="/login" method="POST" class="space-y-4">
+<div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md mx-auto">
+    <h2 class="text-2xl font-bold mb-6">Înregistrare</h2>
+    <form id="signupForm" action="/signup" method="POST" class="space-y-4" novalidate>
+        <div>
+            <label for="name" class="block font-medium">Nume complet</label>
+            <input type="text" id="name" name="name" value="<%= locals.name || '' %>" required
+                   class="w-full border rounded px-3 py-2 mt-1">
+        </div>
+
         <div>
             <label for="email" class="block font-medium">Email</label>
-            <input type="email" name="email" id="email" required class="w-full border rounded px-3 py-2 mt-1">
+            <input type="email" id="email" name="email" value="<%= locals.email || '' %>" required
+                   class="w-full border rounded px-3 py-2 mt-1">
         </div>
 
         <div>
             <label for="password" class="block font-medium">Parolă</label>
-            <input type="password" name="password" id="password" required class="w-full border rounded px-3 py-2 mt-1">
+            <input type="password" id="password" name="password" required class="w-full border rounded px-3 py-2 mt-1">
         </div>
 
-        <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
-            Logare
+        <div>
+            <label for="confirm" class="block font-medium">Confirmă parola</label>
+            <input type="password" id="confirm" name="confirm" required class="w-full border rounded px-3 py-2 mt-1">
+        </div>
+
+        <div>
+            <span class="block font-medium">Tip cont:</span>
+            <div class="space-x-4 mt-2">
+                <label>
+                    <input type="radio" name="role" value="organizer" <%= locals.role === 'organizer' ? 'checked' : '' %> required>
+                    Organizator
+                </label>
+                <label>
+                    <input type="radio" name="role" value="participant" <%= locals.role === 'participant' ? 'checked' : '' %>>
+                    Participant
+                </label>
+            </div>
+        </div>
+
+        <div id="error" class="text-red-600 text-sm font-medium">
+            <% if (locals.error) { %><%= locals.error %><% } %>
+        </div>
+
+        <button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
+            Înregistrează-te
         </button>
     </form>
-
-    <p class="mt-4 text-sm text-center">Nu ai cont? <a href="/signup" class="text-blue-600 hover:underline">Înregistrează-te</a>
-    </p>
 </div>
+
+<script>
+    document.getElementById("signupForm").addEventListener("submit", function (event) {
+        const password = document.getElementById("password").value;
+        const confirm = document.getElementById("confirm").value;
+        const email = document.getElementById("email").value;
+        const roleSelected = document.querySelector('input[name="role"]:checked');
+        const errorDiv = document.getElementById("error");
+        errorDiv.textContent = "";
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(email)) {
+            errorDiv.textContent = "Emailul introdus nu este valid.";
+            event.preventDefault();
+            return;
+        }
+
+        if (password !== confirm) {
+            errorDiv.textContent = "Parolele nu coincid.";
+            event.preventDefault();
+            return;
+        }
+
+        if (!roleSelected) {
+            errorDiv.textContent = "Selectează un tip de cont.";
+            event.preventDefault();
+        }
+    });
+</script>
