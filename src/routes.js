@@ -19,6 +19,8 @@ router.post('/login', authController.loginUser);
 router.get('/signup', authController.showSignupForm);
 router.post('/signup', authController.signupUser);
 
+router.post('/logout', authController.logoutUser);
+
 router.get('/', index);
 router.get('/event/:id', showEventDetails);
 
