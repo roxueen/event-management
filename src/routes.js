@@ -1,5 +1,4 @@
 const express = require('express');
-const authController = require('./controllers/authController');
 const {
     index,
     showEventDetails,
@@ -9,27 +8,37 @@ const {
     createEvent,
     registerToEvent
 } = require("./controllers/eventController");
+const {
+    showLoginForm,
+    loginUser,
+    showSignupForm,
+    signupUser
+} = require("./controllers/authController");
+const {
+    authenticate,
+    authorize
+} = require("./middleware");
 
 const router = express.Router();
 
 
-router.get('/login', authController.showLoginForm);
-router.post('/login', authController.loginUser);
+router.get('/login', showLoginForm);
+router.post('/login', loginUser);
 
-router.get('/signup', authController.showSignupForm);
-router.post('/signup', authController.signupUser);
+router.get('/signup', showSignupForm);
+router.post('/signup', signupUser);
 
-router.post('/logout', authController.logoutUser);
+router.post('/logout', loginUser);
 
 router.get('/', index);
 router.get('/event/:id', showEventDetails);
 
-router.get('/dashboard/participant/:id', participantDashboard);
-router.get('/dashboard/organizer/:id', organizerDashboard);
+router.get('/dashboard/participant/:id', authenticate, authorize('participant'), participantDashboard);
+router.get('/dashboard/organizer/:id', authenticate, authorize('organizer'), organizerDashboard);
 
-router.get('/create-event/:organizerId', showCreateForm);
-router.post('/create-event/:organizerId', createEvent);
+router.get('/create-event/:organizerId', authenticate, authorize('organizer'), showCreateForm);
+router.post('/create-event/:organizerId', authenticate, authorize('organizer'), createEvent);
 
-router.post('/register', registerToEvent);
+router.post('/register', authenticate, authorize('participant'), registerToEvent);
 
 module.exports = router;

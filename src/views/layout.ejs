@@ -15,6 +15,7 @@
     <% if (locals.user) { %>
         <div>
             <span class="mr-4">Salut, <%= user.name %>!</span>
+            <a href="/dashboard" class="bg-green-600 px-3 py-1 rounded hover:bg-green-700">Dashboard</a>
             <a href="/logout" class="bg-red-600 px-3 py-1 rounded hover:bg-red-700">Deconectare</a>
         </div>
     <% } else { %>

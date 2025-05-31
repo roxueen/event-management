@@ -1,6 +1,6 @@
 <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md mx-auto">
   <h2 class="text-2xl font-bold mb-6">Autentificare</h2>
-  <form action="/login" method="POST" class="space-y-4">
+  <form id="loginForm" action="/login" method="POST" class="space-y-4">
     <div>
       <label for="email" class="block font-medium">Email</label>
       <input type="email" name="email" id="email" required class="w-full border rounded px-3 py-2 mt-1">
@@ -11,11 +11,32 @@
       <input type="password" name="password" id="password" required class="w-full border rounded px-3 py-2 mt-1">
     </div>
 
+    <div id="error" class="text-red-600 text-sm font-medium">
+      <% if (locals.error) { %><%= error %><% } %>
+    </div>
+
     <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
       Logare
     </button>
   </form>
 
-  <p class="mt-4 text-sm text-center">Nu ai cont? <a href="/signup" class="text-blue-600 hover:underline">Înregistrează-te</a>
+  <p class="mt-4 text-sm text-center">Nu ai cont?
+    <a href="/signup" class="text-blue-600 hover:underline">Înregistrează-te</a>
   </p>
 </div>
+
+<script>
+  document.getElementById('loginForm').addEventListener('submit', function (e) {
+    const email = document.getElementById('email').value.trim();
+    const errorDiv = document.getElementById('error');
+    errorDiv.textContent = '';
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailPattern.test(email)) {
+      errorDiv.textContent = 'Introduceți un email valid.';
+      e.preventDefault();
+      return;
+    }
+  });
+</script>
