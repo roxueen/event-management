@@ -1,24 +1,22 @@
 {
-  "name": "event_management",
+  "name": "event-management",
   "version": "1.0.0",
   "description": "The Event Management Platform is designed for both organizers and participants, providing an efficient environment for planning, managing, and promoting events. Its primary goal is to simplify the processes of event organization and registration, offering an intuitive and user-friendly interface that is accessible to all users.",
-  "main": "db.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+  "homepage": "https://github.com/roxueen/event-management#readme",
+  "bugs": {
+    "url": "https://github.com/roxueen/event-management/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/roxueen/event_management.git"
+    "url": "git+https://github.com/roxueen/event-management.git"
   },
-  "keywords": [],
-  "author": "",
   "license": "ISC",
+  "author": "",
   "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/roxueen/event_management/issues"
+  "main": "src/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "homepage": "https://github.com/roxueen/event_management#readme",
   "dependencies": {
     "dotenv": "^16.5.0",
     "ejs": "^3.1.10",

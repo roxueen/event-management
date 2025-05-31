@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <title>Autentificare</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+    <h2 class="text-2xl font-bold mb-6">Autentificare</h2>
+    <form action="/login" method="POST" class="space-y-4">
+      <div>
+        <label for="email" class="block font-medium">Email</label>
+        <input type="email" name="email" id="email" required class="w-full border rounded px-3 py-2 mt-1">
+      </div>
+
+      <div>
+        <label for="password" class="block font-medium">Parolă</label>
+        <input type="password" name="password" id="password" required class="w-full border rounded px-3 py-2 mt-1">
+      </div>
+
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+        Logare
+      </button>
+    </form>
+
+    <p class="mt-4 text-sm text-center">Nu ai cont? <a href="/signup" class="text-blue-600 hover:underline">Înregistrează-te</a></p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <title><%= event.title %></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+  <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow">
+    
+    <% if (event.photo) { %>
+      <img src="/<%= event.photo %>" alt="Imagine eveniment" class="w-full h-64 object-cover rounded-md mb-4">
+    <% } %>
+    
+    <h1 class="text-3xl font-bold mb-4"><%= event.title %></h1>
+    <p><strong>Descriere:</strong> <%= event.description %></p>
+    <p><strong>Locație:</strong> <%= event.location %></p>
+    <p><strong>Data:</strong> <%= new Date(event.event_date).toLocaleString("ro-RO") %></p>
+    <p><strong>Locuri disponibile:</strong> <%= event.max_participants %></p>
+
+    <a href="/" class="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Înapoi la evenimente</a>
+  </div>
+</body>
+</html>

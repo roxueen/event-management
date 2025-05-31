@@ -1,6 +1,6 @@
 // models/user.js
 const mysql = require('mysql2/promise');
-const db = require('../db');
+const db = require('../src/db');
 
 module.exports = {
   async createUser({ name, email, password, role }) {
