@@ -59,14 +59,20 @@ exports.participantDashboard = (req, res) => {
   const participantId = req.params.id;
 
   const sql = `
-    SELECT e.*, 
-      EXISTS (
-        SELECT 1 
-        FROM registrations r 
-        WHERE r.event_id = e.id AND r.participant_id = ?
-      ) AS isRegistered
-    FROM events e
-  `;
+  SELECT 
+    e.*,
+    IFNULL(SUM(r.tickets), 0) AS registered_count,
+    EXISTS (
+      SELECT 1 
+      FROM registrations r2 
+      WHERE r2.event_id = e.id AND r2.participant_id = ?
+    ) AS isRegistered
+  FROM events e
+  LEFT JOIN registrations r ON e.id = r.event_id
+  GROUP BY e.id
+  ORDER BY e.event_date ASC
+`;
+
 
   connection.query(sql, [participantId], (err, events) => {
     if (err) {
@@ -77,83 +83,80 @@ exports.participantDashboard = (req, res) => {
   });
 };
 
+
 // Înregistrare participant la un eveniment
 exports.registerToEvent = (req, res) => {
-  const { participant_id, event_id } = req.body;
+  const { event_id, participant_id, tickets } = req.body;
+  const ticketsCount = parseInt(tickets, 10);
 
-  const checkSql = 'SELECT * FROM registrations WHERE participant_id = ? AND event_id = ?';
-  connection.query(checkSql, [participant_id, event_id], (err, results) => {
+  if (isNaN(ticketsCount) || ticketsCount <= 0) {
+    return res.status(400).send("Număr invalid de bilete.");
+  }
+
+  // 1. Verifică dacă participantul e deja înscris
+  const checkExistingSql = `SELECT * FROM registrations WHERE event_id = ? AND participant_id = ?`;
+  
+  connection.query(checkExistingSql, [event_id, participant_id], (err, results) => {
     if (err) {
-      console.error('Eroare la verificarea înregistrării:', err);
-      return res.status(500).send("Eroare la verificare");
+      console.error(err);
+      return res.status(500).send("Eroare la verificarea înscrierii.");
     }
 
     if (results.length > 0) {
-      return res.send("Ești deja înscris la acest eveniment.");
+      return res.status(400).send("Ești deja înscris la acest eveniment.");
     }
 
-    const insertSql = 'INSERT INTO registrations (participant_id, event_id) VALUES (?, ?)';
-    connection.query(insertSql, [participant_id, event_id], (err2) => {
+    // 2. Verifică locuri disponibile (sumă bilete rezervate + cele dorite <= max_participants)
+    const checkSeatsSql = `
+      SELECT max_participants,
+        (SELECT COALESCE(SUM(tickets),0) FROM registrations WHERE event_id = ?) AS booked
+      FROM events WHERE id = ?
+    `;
+
+    connection.query(checkSeatsSql, [event_id, event_id], (err2, eventResults) => {
       if (err2) {
-        console.error('Eroare la înscriere:', err2);
-        return res.status(500).send("Eroare la înscriere");
+        console.error(err2);
+        return res.status(500).send("Eroare la verificarea locurilor disponibile.");
       }
 
-      res.redirect(`/dashboard/participant/${participant_id}`);
+      if (eventResults.length === 0) {
+        return res.status(404).send("Evenimentul nu există.");
+      }
+
+      const event = eventResults[0];
+      const availableSeats = event.max_participants - event.booked;
+
+      if (ticketsCount > availableSeats) {
+        return res.status(400).send(`Nu mai sunt suficiente locuri disponibile. Sunt disponibile doar ${availableSeats} bilete.`);
+      }
+
+      // 3. Inserează înscrierea cu numărul de bilete
+      const insertSql = `INSERT INTO registrations (event_id, participant_id, tickets) VALUES (?, ?, ?)`;
+      connection.query(insertSql, [event_id, participant_id, ticketsCount], (err3) => {
+        if (err3) {
+          console.error(err3);
+          return res.status(500).send("Eroare la înscriere.");
+        }
+
+        res.redirect(`/dashboard/participant/${participant_id}`);
+      });
     });
   });
 };
 
 
-// Formular login
-exports.showLoginForm = (req, res) => {
-  res.render('login');
-};
+exports.organizerDashboard = (req, res) => {
+  const organizerId = req.params.id;
 
-// Procesare login
-exports.loginUser = (req, res) => {
-  const { email, password } = req.body;
-
-  const sql = 'SELECT * FROM users WHERE email = ? AND password = ?';
-  connection.query(sql, [email, password], (err, results) => {
+  const sql = `SELECT * FROM events WHERE organizer_id = ? ORDER BY event_date DESC`;
+  connection.query(sql, [organizerId], (err, events) => {
     if (err) {
-      console.error('Eroare la login:', err);
-      return res.status(500).send('Eroare la server');
+      console.error('Eroare la dashboard:', err);
+      return res.status(500).send("Eroare la afișare");
     }
 
-    if (results.length > 0) {
-      const user = results[0];
-      // redirect după rol
-      if (user.type === 'organizer') {
-        res.redirect(`/create-event/${user.id}`);
-      } else {
-        res.redirect(`/dashboard/participant/${user.id}`);
-      }
-    } else {
-      res.send('Email sau parolă incorectă.');
-    }
+    res.render('organizerDashboard', { organizerId, events });
   });
 };
 
-// Formular signup (dacă vrei să-l pui aici)
-exports.showSignupForm = (req, res) => {
-  res.render('signup');
-};
 
-// Procesare signup (ar trebui să validezi, criptezi parola, etc.)
-exports.signupUser = (req, res) => {
-  const { name, email, password, confirm, type } = req.body;
-
-  if (password !== confirm) {
-    return res.send("Parolele nu coincid.");
-  }
-
-  const sql = 'INSERT INTO users (name, email, password, type) VALUES (?, ?, ?, ?)';
-  connection.query(sql, [name, email, password, type], (err, result) => {
-    if (err) {
-      console.error('Eroare la înregistrare:', err);
-      return res.status(500).send('Eroare la înregistrare');
-    }
-    res.redirect('/login');
-  });
-};

@@ -1,26 +1,22 @@
 const express = require('express');
 const router = express.Router();
 const eventController = require('../controllers/eventController');
-const authController = require('../controllers/authController');
 
-// Ruta pentru pagina principală (lista evenimente)
+// Pagina principală (listă evenimente)
 router.get('/', eventController.index);
 
-// Login și Signup
-router.get('/login', authController.showLoginForm);
-router.post('/login', authController.loginUser);
-router.get('/signup', authController.showSignupForm);
-router.post('/signup', authController.signupUser);
-
-// Dashboard-uri în funcție de tipul de cont
+// Dashboard-uri
 router.get('/dashboard/participant/:id', eventController.participantDashboard);
+router.get('/dashboard/organizer/:id', eventController.organizerDashboard);
 
+// Detalii eveniment
 router.get('/event/:id', eventController.showEventDetails);
 
-// Formular creare eveniment (organizer)
+// Creare eveniment (doar pentru organizatori)
 router.get('/create-event/:organizerId', eventController.showCreateForm);
 router.post('/create-event/:organizerId', eventController.createEvent);
-router.post('/register', eventController.registerToEvent);
 
+// Înregistrare participant la eveniment
+router.post('/register', eventController.registerToEvent);
 
 module.exports = router;
