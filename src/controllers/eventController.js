@@ -35,60 +35,88 @@ exports.showEventDetails = (req, res) => {
 
 
 exports.showCreateForm = (req, res) => {
-    const organizerId = req.params.organizerId;
     res.render('createEvent', {
         user: req.session.user,
-        organizerId: organizerId
     });
 };
 
 exports.createEvent = (req, res) => {
-    const organizerId = req.params.organizerId;
+    const user = req.session.user
     const {title, description, location, event_date, max_participants} = req.body;
-    const maxParts = max_participants || 100;
 
     const sql = `INSERT INTO events (organizer_id, title, description, location, event_date, max_participants)
                  VALUES (?, ?, ?, ?, ?, ?)`;
-    const params = [organizerId, title, description, location, event_date, maxParts];
+    const params = [user.id, title, description, location, event_date, maxParts];
 
     connection.query(sql, params, (err) => {
         if (err) {
             console.error('Eroare la inserarea evenimentului:', err);
             return res.status(500).send('Eroare la inserarea evenimentului');
         }
-        res.redirect('/');
+        res.redirect('/dashboard');
     });
 };
 
-exports.participantDashboard = (req, res) => {
-    const participantId = req.params.id;
+exports.dashboard = (req, res) => {
+    const user = req.session.user;
+    const userId = user.id;
 
-    const sql = `
-        SELECT e.*,
-               IFNULL(SUM(r.tickets), 0)            AS registered_count,
-               EXISTS (SELECT 1
+    if (user.role === 'participant') {
+        const sql = `
+            SELECT e.*,
+                   IFNULL(SUM(r.tickets), 0) AS registered_count,
+                   EXISTS (
+                       SELECT 1
                        FROM registrations r2
                        WHERE r2.event_id = e.id
-                         AND r2.participant_id = ?) AS isRegistered
-        FROM events e
-                 LEFT JOIN registrations r ON e.id = r.event_id
-        GROUP BY e.id
-        ORDER BY e.event_date ASC
-    `;
+                         AND r2.participant_id = ?
+                   ) AS isRegistered
+            FROM events e
+            LEFT JOIN registrations r ON e.id = r.event_id
+            GROUP BY e.id
+            ORDER BY e.event_date ASC
+        `;
 
+        connection.query(sql, [userId], (err, events) => {
+            if (err) {
+                console.error('Eroare la afișarea evenimentelor:', err);
+                return res.status(500).send("Eroare la afișare");
+            }
 
-    connection.query(sql, [participantId], (err, events) => {
-        if (err) {
-            console.error('Eroare la afișarea evenimentelor:', err);
-            return res.status(500).send("Eroare la afișarea evenimentelor");
-        }
-        res.render('participantDashboard', {
-            user: req.session.user,
-            participantId: participantId,
-            events: events
+            res.render('dashboard', {
+                userRole: 'participant',
+                participantId: userId,
+                events
+            });
         });
-    });
+
+    } else if (user.role === 'organizer') {
+        const sql = `
+            SELECT *
+            FROM events
+            WHERE organizer_id = ?
+            ORDER BY event_date DESC
+        `;
+
+        connection.query(sql, [userId], (err, events) => {
+            if (err) {
+                console.error('Eroare la dashboard:', err);
+                return res.status(500).send("Eroare la afișare");
+            }
+
+            res.render('dashboard', {
+                userRole: 'organizer',
+                organizerId: userId,
+                events
+            });
+        });
+
+    } else {
+        res.status(403).send("Rol necunoscut");
+    }
 };
+
+
 
 
 exports.registerToEvent = (req, res) => {
@@ -155,26 +183,5 @@ exports.registerToEvent = (req, res) => {
 };
 
 
-exports.organizerDashboard = (req, res) => {
-    const organizerId = req.params.id;
-
-    const sql = `SELECT *
-                 FROM events
-                 WHERE organizer_id = ?
-                 ORDER BY event_date DESC`;
-
-    connection.query(sql, [organizerId], (err, events) => {
-        if (err) {
-            console.error('Eroare la dashboard:', err);
-            return res.status(500).send("Eroare la afișare");
-        }
-
-        res.render('organizerDashboard', {
-            user: req.session.user,
-            organizerId: organizerId,
-            events: events
-        });
-    });
-};
 
 

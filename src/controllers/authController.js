@@ -7,7 +7,7 @@ exports.showSignupForm = (req, res) => {
 };
 
 exports.signupUser = (req, res) => {
-    const { name, email, password, role } = req.body;
+    const {name, email, password, role} = req.body;
 
     const sql = 'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)';
     connection.query(sql, [name, email, password, role], (err) => {
@@ -38,7 +38,7 @@ exports.showLoginForm = (req, res) => {
 };
 
 exports.loginUser = (req, res) => {
-    const { email, password } = req.body;
+    const {email, password} = req.body;
 
     const sql = 'SELECT * FROM users WHERE email = ? AND password = ?';
     connection.query(sql, [email, password], (err, results) => {
@@ -60,11 +60,8 @@ exports.loginUser = (req, res) => {
                 role: user.role
             };
 
-            if (user.role === 'organizer') {
-                return res.redirect(`/dashboard/organizer/${user.id}`);
-            } else {
-                return res.redirect(`/dashboard/participant/${user.id}`);
-            }
+            return res.redirect('/dashboard');
+
         } else {
             return res.render('login', {
                 title: 'Login',

@@ -1,9 +1,7 @@
 <div class="max-w-xl mx-auto mt-10 p-6 bg-white rounded-lg shadow">
-    <h1 class="text-3xl font-bold mb-2">DASHBOARD</h1>
     <h2 class="text-xl font-semibold mb-6">Creare Eveniment</h2>
 
-    <form action="/create-event/<%= organizerId %>" method="POST" class="space-y-4">
-        <input type="hidden" name="organizer_id" value="<%= organizerId %>">
+    <form action="/create-event" method="POST" class="space-y-4">
 
         <div>
             <label for="title" class="block font-medium">Titlu</label>

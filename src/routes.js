@@ -2,11 +2,10 @@ const express = require('express');
 const {
     index,
     showEventDetails,
-    participantDashboard,
-    organizerDashboard,
     showCreateForm,
     createEvent,
-    registerToEvent
+    registerToEvent,
+    dashboard
 } = require("./controllers/eventController");
 const {
     showLoginForm,
@@ -33,12 +32,11 @@ router.post('/logout', loginUser);
 router.get('/', index);
 router.get('/event/:id', showEventDetails);
 
-router.get('/dashboard/participant/:id', authenticate, authorize('participant'), participantDashboard);
-router.get('/dashboard/organizer/:id', authenticate, authorize('organizer'), organizerDashboard);
+router.get('/dashboard', authenticate, dashboard);
 
-router.get('/create-event/:organizerId', authenticate, authorize('organizer'), showCreateForm);
-router.post('/create-event/:organizerId', authenticate, authorize('organizer'), createEvent);
+router.get('/create-event', authenticate, showCreateForm);
+router.post('/create-event', authenticate, createEvent);
 
-router.post('/register', authenticate, authorize('participant'), registerToEvent);
+router.post('/register-to-event', authenticate, authorize('participant'), registerToEvent);
 
 module.exports = router;
