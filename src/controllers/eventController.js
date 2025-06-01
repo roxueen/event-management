@@ -68,6 +68,27 @@ exports.createEvent = (req, res) => {
     });
 };
 
+exports.deleteEvent = (req, res) => {
+    const user = req.session.user;
+    const eventId = req.body.event_id;
+
+    const sql = `DELETE FROM events WHERE id = ? AND organizer_id = ?`;
+
+    connection.query(sql, [eventId, user.id], (err, result) => {
+        if (err) {
+            console.error('Eroare la ștergerea evenimentului:', err);
+            return res.status(500).send('Eroare la ștergerea evenimentului');
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(403).send('Nu ai permisiunea să ștergi acest eveniment.');
+        }
+
+        res.redirect('/dashboard');
+    });
+};
+
+
 
 exports.dashboard = (req, res) => {
     const user = req.session.user;
@@ -94,8 +115,7 @@ exports.dashboard = (req, res) => {
             }
 
             res.render('dashboard', {
-                userRole: 'participant',
-                participantId: userId,
+                user: req.session.user,
                 events
             });
         });
@@ -115,8 +135,7 @@ exports.dashboard = (req, res) => {
             }
 
             res.render('dashboard', {
-                userRole: 'organizer',
-                organizerId: userId,
+                user: req.session.user,
                 events
             });
         });
@@ -125,6 +144,7 @@ exports.dashboard = (req, res) => {
         res.status(403).send("Rol necunoscut");
     }
 };
+
 
 
 exports.registerToEvent = (req, res) => {

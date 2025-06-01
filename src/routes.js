@@ -5,7 +5,7 @@ const {
     showCreateForm,
     createEvent,
     registerToEvent,
-    dashboard
+    dashboard, deleteEvent
 } = require("./controllers/eventController");
 const {
     showLoginForm,
@@ -48,6 +48,7 @@ router.get('/dashboard', authenticate, dashboard);
 
 router.get('/create-event', authenticate, showCreateForm);
 router.post('/create-event', authenticate, upload.single('photo'), createEvent);
+router.post('/delete-event', authenticate, authorize('organizer'), deleteEvent);
 
 router.post('/register-to-event', authenticate, authorize('participant'), registerToEvent);
 
