@@ -43,8 +43,8 @@ INSERT INTO users (name, email, password, role) VALUES
 
 -- Insert events
 INSERT INTO events (organizer_id, title, description, location, event_date, max_participants, photo) VALUES
-(1, 'Tech Conference', 'A conference about the latest in tech.', 'New York', '2025-08-01 09:00:00', 200, 'img/tech-conference.png'),
-(1, 'Startup Pitch Night', 'Pitch your startup ideas.', 'San Francisco', '2025-09-10 18:30:00', 50, 'img/pitch-night.png');
+(1, 'Tech Conference', 'A conference about the latest in tech.', 'New York', '2025-08-01 09:00:00', 200, 'uploads/tech-conference.png'),
+(1, 'Startup Pitch Night', 'Pitch your startup ideas.', 'San Francisco', '2025-09-10 18:30:00', 50, 'uploads/pitch-night.png');
 
 
 -- Insert registrations

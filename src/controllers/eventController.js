@@ -41,12 +41,23 @@ exports.showCreateForm = (req, res) => {
 };
 
 exports.createEvent = (req, res) => {
-    const user = req.session.user
+    const user = req.session.user;
     const {title, description, location, event_date, max_participants} = req.body;
+    const photo = req.file ? `uploads/${req.file.filename}` : null;
 
-    const sql = `INSERT INTO events (organizer_id, title, description, location, event_date, max_participants)
-                 VALUES (?, ?, ?, ?, ?, ?)`;
-    const params = [user.id, title, description, location, event_date, maxParts];
+    const sql = `
+        INSERT INTO events (organizer_id, title, description, location, event_date, max_participants, photo)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
+    const params = [
+        user.id,
+        title,
+        description,
+        location,
+        event_date,
+        max_participants,
+        photo
+    ];
 
     connection.query(sql, params, (err) => {
         if (err) {
@@ -57,6 +68,7 @@ exports.createEvent = (req, res) => {
     });
 };
 
+
 exports.dashboard = (req, res) => {
     const user = req.session.user;
     const userId = user.id;
@@ -64,15 +76,13 @@ exports.dashboard = (req, res) => {
     if (user.role === 'participant') {
         const sql = `
             SELECT e.*,
-                   IFNULL(SUM(r.tickets), 0) AS registered_count,
-                   EXISTS (
-                       SELECT 1
-                       FROM registrations r2
-                       WHERE r2.event_id = e.id
-                         AND r2.participant_id = ?
-                   ) AS isRegistered
+                   IFNULL(SUM(r.tickets), 0)            AS registered_count,
+                   EXISTS (SELECT 1
+                           FROM registrations r2
+                           WHERE r2.event_id = e.id
+                             AND r2.participant_id = ?) AS isRegistered
             FROM events e
-            LEFT JOIN registrations r ON e.id = r.event_id
+                     LEFT JOIN registrations r ON e.id = r.event_id
             GROUP BY e.id
             ORDER BY e.event_date ASC
         `;
@@ -115,8 +125,6 @@ exports.dashboard = (req, res) => {
         res.status(403).send("Rol necunoscut");
     }
 };
-
-
 
 
 exports.registerToEvent = (req, res) => {

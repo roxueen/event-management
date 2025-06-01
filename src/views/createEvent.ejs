@@ -1,7 +1,7 @@
 <div class="max-w-xl mx-auto mt-10 p-6 bg-white rounded-lg shadow">
     <h2 class="text-xl font-semibold mb-6">Creare Eveniment</h2>
 
-    <form action="/create-event" method="POST" class="space-y-4">
+    <form action="/create-event" method="POST" enctype="multipart/form-data" class="space-y-4">
 
         <div>
             <label for="title" class="block font-medium">Titlu</label>
@@ -28,8 +28,13 @@
             <input type="number" name="max_participants" min="1" class="w-full border rounded px-3 py-2 mt-1">
         </div>
 
-        <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
-            Crează eveniment
-        </button>
+            <div>
+        <label for="photo" class="block font-medium">Fotografie Eveniment</label>
+        <input type="file" name="photo" accept="image/*" class="w-full border rounded px-3 py-2 mt-1">
+    </div>
+
+    <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+        Crează eveniment
+    </button>
     </form>
 </div>
